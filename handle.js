@@ -176,6 +176,21 @@ module.exports = {
             text: msg
           });
           break;
+        case "joln":
+        case "joln@werewolfbot":
+        case "jo1n":
+        case "jo1n@werewolfbot":
+        case "john":
+        case "john@werewolfbot":
+        case "jolin":
+        case "jolin@werewolfbot":
+          var msg='請各位認明 /join@werewolfbot 才是正確的指令哦ow<';
+          bot.sendMessage({
+            chat_id: message.chat.id,
+            text: msg,
+            reply_to_message_id: message.message_id
+          });
+          break;
         case "sendPhoto":
           bot.sendPhoto({
             chat_id: message.chat.id,
