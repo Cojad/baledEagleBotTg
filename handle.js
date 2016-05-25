@@ -1,4 +1,32 @@
 // handle.js
+var check_cmd_spelling = function(cmds, cmd){
+  var levenshtein = require('fast-levenshtein');
+  var reg1=/(\w+)@(\w+)/;
+  var reg2=/(\w+)/;
+  var re2=reg2.exec(cmd);
+  if(re2){
+    var cmd1=re2[1];
+    var edit_distance=0;
+    var cloest_cmd=-1;
+    var weight_index_max = 0.5;
+    var weight_index_tmp = 0.5;
+    var weight_index = weight_index_max;
+
+    for (var i = cmds.length - 1; i >= 0; i--) {
+      var tmp=reg1.exec(cmds[i])[1];
+      edit_distance = levenshtein.get(tmp,cmd1);
+      weight_index_tmp = edit_distance / tmp.length;
+      if( weight_index_tmp < weight_index ) {
+        weight_index = weight_index_tmp;
+        cloest_cmd = i;
+      }
+    }
+  }
+  if(weight_index == 0 && cmd!=reg2.exec(cmds[cloest_cmd])[1] && cmd!=cmds[cloest_cmd]) { //如果指令相同, 不是使用純指令, 不等於完整冠名指令 則代表 bot名字錯誤!
+    return cmds[cloest_cmd];
+  }
+  return ( weight_index > 0 && cloest_cmd > -1 ) ? cmds[cloest_cmd] : ""; //如果不相同, 有接近的指令, 代表指令可能有錯!
+}
 module.exports = {
 	hlInit: function() { //模組倍hotload給載入時, 要做的事情, 類似object constructor, 不過是初始化這個檔案載入
     console.log("對話邏輯 has been loaded/reloaded");
@@ -10,7 +38,10 @@ module.exports = {
 
     console.log(message); //把來自Server的message(JSON格式)直接輸出到螢幕上
     fs.appendFile('/root/msg.log', JSON.stringify(message)+"\n", function (err) { if (err) throw err; }); //把所有的訊息記錄在 /root/msg.log
-    if(typeof(message.text) === "string" && message.text.charAt(0) === '/') { //只要使用者開頭用 /xxx 來對bot下指令的時候才動作, 不然就忽略訊息
+    if(typeof(message) === "object" //有時候telegram的bot會發送的不適message屬性的物件, 等待node-telegram-bot 更新, 我先送了一個防止carsh的patch了 https://github.com/depoio/node-telegram-bot/pull/71
+      && typeof(message.text) === "string"
+      && message.text.charAt(0) === '/'
+      && message.text.length > 1 ) { //只要使用者開頭用 /xxx 來對bot下指令的時候才動作, 不然就忽略訊息
       var txt=message.text.substring(1).split(' ');
       var cmd=txt[0].toLowerCase();
       var str=message.text.substring(cmd.length+2);
@@ -158,8 +189,7 @@ module.exports = {
     							'say - 讓 柯姊2.2 說你講過的話 ex: /say 好想吃八砲\n' +
     							'eat - 讓 柯姊2.2 吃掉你想說的話 ex: /eat 被吃了';
           if( message.chat.id == -36226149 )
-            msg += '\n靠北公告欄: https://telegram.me/joinchat/xxxxxxxxxxxxxxxxxxxxxx';
-
+            msg += '\n靠北公告欄: https://telegram.me/joinchat/BaUr7TvnkCmyO2cEmyMLxA';
           bot.sendMessage({
             chat_id: message.chat.id,
             text: msg
@@ -168,27 +198,12 @@ module.exports = {
         case "board":
         case "board@baldeaglebot":
           if( message.chat.id == -36226149 )
-            var msg='靠北公告欄在此！記得加入收聽重要訊息喔~\nhttps://telegram.me/joinchat/xxxxxxxxxxxxxxxxxxxxxx';
+            var msg='靠北公告欄在此！記得加入收聽重要訊息喔~\nhttps://telegram.me/joinchat/BaUr7TvnkCmyO2cEmyMLxA';
           else
             var msg='本群組沒有建立公告欄喔!';
           bot.sendMessage({
             chat_id: message.chat.id,
             text: msg
-          });
-          break;
-        case "joln":
-        case "joln@werewolfbot":
-        case "jo1n":
-        case "jo1n@werewolfbot":
-        case "john":
-        case "john@werewolfbot":
-        case "jolin":
-        case "jolin@werewolfbot":
-          var msg='請各位認明 /join@werewolfbot 才是正確的指令哦ow<';
-          bot.sendMessage({
-            chat_id: message.chat.id,
-            text: msg,
-            reply_to_message_id: message.message_id
           });
           break;
         case "sendPhoto":
@@ -221,6 +236,18 @@ module.exports = {
         default:
           break;
       }
+      var cmds=["join@werewolfbot","startgame@werewolfbot","startchaos@werewolfbot","players@werewolfbot"];
+      var spell_check=check_cmd_spelling(cmds,cmd);
+      if(spell_check!="") {
+        var msg='其實你是想說 /' + spell_check + ' 的吧?!(歪頭';
+        bot.sendMessage({
+          chat_id: message.chat.id,
+          text: msg,
+          reply_to_message_id: message.message_id
+        });
+      }
     }
   }
-}
+  ,
+  "key": "測試用變數"
+};
