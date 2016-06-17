@@ -7,7 +7,7 @@ var check_cmd_spelling = function(cmds, cmd){
   if(re2){
     var cmd1=re2[1];
     var edit_distance=0;
-    var cloest_cmd=-1;
+    var closest_cmd=-1;
     var weight_index_max = 0.5;
     var weight_index_tmp = 0.5;
     var weight_index = weight_index_max;
@@ -18,14 +18,14 @@ var check_cmd_spelling = function(cmds, cmd){
       weight_index_tmp = edit_distance / tmp.length;
       if( weight_index_tmp < weight_index ) {
         weight_index = weight_index_tmp;
-        cloest_cmd = i;
+        closest_cmd = i;
       }
     }
   }
-  if(weight_index == 0 && cmd!=reg2.exec(cmds[cloest_cmd])[1] && cmd!=cmds[cloest_cmd]) { //如果指令相同, 不是使用純指令, 不等於完整冠名指令 則代表 bot名字錯誤!
-    return cmds[cloest_cmd];
+  if(weight_index == 0 && cmd!=reg2.exec(cmds[closest_cmd])[1] && cmd!=cmds[closest_cmd]) { //如果指令相同, 不是使用純指令, 不等於完整冠名指令 則代表 bot名字錯誤!
+    return cmds[closest_cmd];
   }
-  return ( weight_index > 0 && cloest_cmd > -1 ) ? cmds[cloest_cmd] : ""; //如果不相同, 有接近的指令, 代表指令可能有錯!
+  return ( weight_index > 0 && closest_cmd > -1 ) ? cmds[closest_cmd] : ""; //如果不相同, 有接近的指令, 代表指令可能有錯!
 }
 module.exports = {
 	hlInit: function() { //模組倍hotload給載入時, 要做的事情, 類似object constructor, 不過是初始化這個檔案載入
