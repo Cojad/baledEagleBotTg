@@ -91,7 +91,7 @@ module.exports = {
           msg_pool.push('(完食');
           //msg_pool.push('');
 
-          if( sObj.match(/(木可|柯|科)(小| |_)?(姊|姐|女且)/) || sObj.match(/([cCｃＣ][oOｏＯ][jJｊＪ][aAａＡ][dDｄＤ])/) ){ //柯姊
+          if( sObj.match(/(木可|柯|科)(小| |_)?(姊|姐|女且)/) || sObj.match(/([cCｃＣсС][oOｏＯоО][jJｊＪ][aAａＡаА][dDｄＤ])/) ){ //柯姊
             msg_pool=['你覺得這可能發生嗎?',sNameFirst + ', 你怎不先吃給我看看啊(歪頭','可是你看起來比較好吃耶' ];
           }          if( sObj.match(/(木可|柯|科)(小| |_)?(姊|姐|女且)(\d\.\d)/) ){ //柯姊x.x
             msg_pool=['我怎能吃自己同胞呢?'];
@@ -126,7 +126,7 @@ module.exports = {
             msg_pool.push(sNameFirst + ', 要付我多少佣金阿～～？');
             msg_pool.push('刺殺' + sObj + '失敗...殘念');
           }
-          if( sObj.match(/(木可|柯|科)(小| )?(姊|姐|女且)/) || sObj.match(/([cCｃＣ][oOｏＯ][jJｊＪ][aAａＡ][dDｄＤ])/)){
+          if( sObj.match(/(木可|柯|科)(小| )?(姊|姐|女且)/) || sObj.match(/([cCｃＣсС][oOｏＯоО][jJｊＪ][aAａＡаА][dDｄＤ])/)){
             msg_pool=['你覺得這可能發生嗎?','你猜誰會先死?','這樣好了, 我付你500八炮殺掉柯姊?','這像話嗎?'];
           }
           if( sObj.match(/(木可|柯|科)(小| )?(姊|姐|女且)(\d\.\d)/) ){
